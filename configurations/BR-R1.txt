@@ -1,0 +1,182 @@
+! ==================================================
+! DEVICE: BR-R1
+! MODEL: Cisco 2911
+! PROJECT: Secure Multi-VLAN Enterprise Branch Network
+! ==================================================
+
+version 15.1
+
+no service timestamps log datetime msec
+no service timestamps debug datetime msec
+no service password-encryption
+
+hostname BR-R1
+
+!
+! DHCP CONFIGURATION
+!
+
+ip dhcp excluded-address 192.168.10.1
+ip dhcp excluded-address 192.168.10.17
+ip dhcp excluded-address 192.168.10.33
+ip dhcp excluded-address 192.168.10.49
+
+ip dhcp pool HR
+ network 192.168.10.0 255.255.255.240
+ default-router 192.168.10.1
+
+ip dhcp pool SALES
+ network 192.168.10.16 255.255.255.240
+ default-router 192.168.10.17
+
+ip dhcp pool IT
+ network 192.168.10.32 255.255.255.240
+ default-router 192.168.10.33
+
+ip dhcp pool GUEST
+ network 192.168.10.48 255.255.255.248
+ default-router 192.168.10.49
+
+!
+! LOCAL ADMINISTRATOR
+! Password hash intentionally excluded from public repository.
+! Local SSH administrator account configured separately.
+!
+
+ip ssh version 2
+ip domain-name enterprise.local
+
+!
+! ROUTER SERVICES
+!
+
+ip cef
+no ipv6 cef
+
+!
+! ROUTER-ON-A-STICK CONFIGURATION
+!
+
+interface GigabitEthernet0/0
+ description TRUNK-TO-BR-SW1
+ no ip address
+ duplex auto
+ speed auto
+
+interface GigabitEthernet0/0.10
+ description GATEWAY-HR
+ encapsulation dot1Q 10
+ ip address 192.168.10.1 255.255.255.240
+ ip nat inside
+
+interface GigabitEthernet0/0.20
+ description GATEWAY-SALES
+ encapsulation dot1Q 20
+ ip address 192.168.10.17 255.255.255.240
+ ip nat inside
+
+interface GigabitEthernet0/0.30
+ description GATEWAY-IT
+ encapsulation dot1Q 30
+ ip address 192.168.10.33 255.255.255.240
+ ip nat inside
+
+interface GigabitEthernet0/0.40
+ description GATEWAY-GUEST
+ encapsulation dot1Q 40
+ ip address 192.168.10.49 255.255.255.248
+ ip nat inside
+ ip access-group GUEST-IN in
+
+interface GigabitEthernet0/0.99
+ description GATEWAY-MANAGEMENT
+ encapsulation dot1Q 99
+ ip address 192.168.10.57 255.255.255.248
+
+!
+! WAN INTERFACE
+!
+
+interface GigabitEthernet0/1
+ description WAN-TO-ISP-R1
+ ip address 10.0.0.1 255.255.255.252
+ ip nat outside
+ duplex auto
+ speed auto
+
+!
+! UNUSED INTERFACE
+!
+
+interface GigabitEthernet0/2
+ description UNUSED-INTERFACE
+ no ip address
+ duplex auto
+ speed auto
+ shutdown
+
+interface Vlan1
+ no ip address
+ shutdown
+
+!
+! NAT/PAT CONFIGURATION
+!
+
+ip nat inside source list NAT-INSIDE interface GigabitEthernet0/1 overload
+
+!
+! DEFAULT ROUTE
+!
+
+ip classless
+ip route 0.0.0.0 0.0.0.0 10.0.0.2
+
+!
+! NAT ACCESS CONTROL LIST
+!
+
+ip access-list standard NAT-INSIDE
+ permit 192.168.10.0 0.0.0.15
+ permit 192.168.10.16 0.0.0.15
+ permit 192.168.10.32 0.0.0.15
+ permit 192.168.10.48 0.0.0.7
+
+!
+! GUEST NETWORK SECURITY ACL
+!
+
+ip access-list extended GUEST-IN
+ permit udp any eq bootpc any eq bootps
+ permit ip 192.168.10.48 0.0.0.7 host 192.168.10.49
+ deny ip 192.168.10.48 0.0.0.7 192.168.10.0 0.0.0.255
+ permit ip 192.168.10.48 0.0.0.7 any
+
+!
+! FLOW EXPORT
+!
+
+ip flow-export version 9
+
+!
+! CONSOLE AND AUXILIARY LINES
+!
+
+line con 0
+
+line aux 0
+
+!
+! SSH-ONLY REMOTE MANAGEMENT
+!
+
+line vty 0 4
+ exec-timeout 5 0
+ login local
+ transport input ssh
+
+end
+
+! ==================================================
+! END OF BR-R1 CONFIGURATION
+! ==================================================

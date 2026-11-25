@@ -1,0 +1,82 @@
+! ==================================================
+! DEVICE: ISP-R1
+! MODEL: Cisco 1941
+! PROJECT: Secure Multi-VLAN Enterprise Branch Network
+! ==================================================
+
+version 15.1
+
+no service timestamps log datetime msec
+no service timestamps log datetime msec
+no service password-encryption
+
+hostname ISP-R1
+
+!
+! ROUTER SERVICES
+!
+
+ip cef
+no ipv6 cef
+
+!
+! WAN CONNECTION TO BRANCH ROUTER
+!
+
+interface GigabitEthernet0/0
+ description WAN-TO-BR-R1
+ ip address 10.0.0.2 255.255.255.252
+ duplex auto
+ speed auto
+
+!
+! CONNECTION TO PUBLIC SERVER
+!
+
+interface GigabitEthernet0/1
+ description CONNECTION-TO-PUBLIC-SERVER
+ ip address 198.51.100.1 255.255.255.252
+ duplex auto
+ speed auto
+
+!
+! DEFAULT VLAN INTERFACE
+!
+
+interface Vlan1
+ no ip address
+ shutdown
+
+!
+! STATIC ROUTING
+!
+
+ip classless
+ip route 192.168.10.0 255.255.255.0 10.0.0.1
+
+!
+! FLOW EXPORT
+!
+
+ip flow-export version 9
+
+!
+! CONSOLE AND AUXILIARY LINES
+!
+
+line con 0
+
+line aux 0
+
+!
+! VTY ACCESS
+!
+
+line vty 0 4
+ login
+
+end
+
+! ==================================================
+! END OF ISP-R1 CONFIGURATION
+! ==================================================

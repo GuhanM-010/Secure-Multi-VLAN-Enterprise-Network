@@ -1,0 +1,289 @@
+! ==================================================
+! DEVICE: BR-SW1
+! MODEL: Cisco 2960
+! PROJECT: Secure Multi-VLAN Enterprise Branch Network
+! ==================================================
+
+version 15.0
+
+no service timestamps log datetime msec
+no service timestamps debug datetime msec
+no service password-encryption
+
+hostname BR-SW1
+
+!
+! SSH CONFIGURATION
+!
+
+ip ssh version 2
+ip domain-name enterprise.local
+
+!
+! LOCAL ADMINISTRATOR
+! Password hash intentionally excluded from public repository.
+! Local SSH administrator account configured separately.
+!
+
+!
+! SPANNING TREE CONFIGURATION
+!
+
+spanning-tree mode pvst
+spanning-tree extend system-id
+
+!
+! VLAN 10 - HR
+!
+
+interface FastEthernet0/1
+ switchport access vlan 10
+ switchport mode access
+ switchport port-security
+ switchport port-security mac-address sticky
+ switchport port-security violation restrict
+ switchport port-security mac-address sticky 000A.415A.6DAA
+ spanning-tree portfast
+ spanning-tree bpduguard enable
+
+interface FastEthernet0/2
+ switchport access vlan 10
+ switchport mode access
+ switchport port-security
+ switchport port-security mac-address sticky
+ switchport port-security violation restrict
+ switchport port-security mac-address sticky 000A.F391.BEB4
+ spanning-tree portfast
+ spanning-tree bpduguard enable
+
+interface FastEthernet0/3
+ switchport access vlan 10
+ switchport mode access
+ switchport port-security
+ switchport port-security mac-address sticky
+ switchport port-security violation restrict
+ switchport port-security mac-address sticky 000B.BE02.B18E
+ spanning-tree portfast
+ spanning-tree bpduguard enable
+
+interface FastEthernet0/4
+ switchport access vlan 10
+ switchport mode access
+ switchport port-security
+ switchport port-security mac-address sticky
+ switchport port-security violation restrict
+ switchport port-security mac-address sticky 000A.F327.3088
+ spanning-tree portfast
+ spanning-tree bpduguard enable
+
+!
+! VLAN 20 - SALES
+!
+
+interface FastEthernet0/5
+ switchport access vlan 20
+ switchport mode access
+ switchport port-security
+ switchport port-security mac-address sticky
+ switchport port-security violation restrict
+ switchport port-security mac-address sticky 0006.2A74.CB34
+ spanning-tree portfast
+ spanning-tree bpduguard enable
+
+interface FastEthernet0/6
+ switchport access vlan 20
+ switchport mode access
+ switchport port-security
+ switchport port-security mac-address sticky
+ switchport port-security violation restrict
+ switchport port-security mac-address sticky 0090.0C1B.56D5
+ spanning-tree portfast
+ spanning-tree bpduguard enable
+
+interface FastEthernet0/7
+ switchport access vlan 20
+ switchport mode access
+ switchport port-security
+ switchport port-security mac-address sticky
+ switchport port-security violation restrict
+ switchport port-security mac-address sticky 00E0.F9BA.9D99
+ spanning-tree portfast
+ spanning-tree bpduguard enable
+
+interface FastEthernet0/8
+ switchport access vlan 20
+ switchport mode access
+ switchport port-security
+ switchport port-security mac-address sticky
+ switchport port-security violation restrict
+ switchport port-security mac-address sticky 0005.5EED.B6C6
+ spanning-tree portfast
+ spanning-tree bpduguard enable
+
+!
+! VLAN 30 - IT
+!
+
+interface FastEthernet0/9
+ switchport access vlan 30
+ switchport mode access
+ switchport port-security
+ switchport port-security mac-address sticky
+ switchport port-security violation restrict
+ switchport port-security mac-address sticky 00D0.D329.5387
+ spanning-tree portfast
+ spanning-tree bpduguard enable
+
+interface FastEthernet0/10
+ switchport access vlan 30
+ switchport mode access
+ switchport port-security
+ switchport port-security mac-address sticky
+ switchport port-security violation restrict
+ switchport port-security mac-address sticky 0060.2F67.3C69
+ spanning-tree portfast
+ spanning-tree bpduguard enable
+
+interface FastEthernet0/11
+ switchport access vlan 30
+ switchport mode access
+ switchport port-security
+ switchport port-security mac-address sticky
+ switchport port-security violation restrict
+ switchport port-security mac-address sticky 0002.4A8D.75A4
+ spanning-tree portfast
+ spanning-tree bpduguard enable
+
+interface FastEthernet0/12
+ switchport access vlan 30
+ switchport mode access
+ switchport port-security
+ switchport port-security mac-address sticky
+ switchport port-security violation restrict
+ switchport port-security mac-address sticky 0040.0BC0.17D9
+ spanning-tree portfast
+ spanning-tree bpduguard enable
+
+!
+! VLAN 40 - GUEST
+!
+
+interface FastEthernet0/13
+ switchport access vlan 40
+ switchport mode access
+ switchport port-security
+ switchport port-security mac-address sticky
+ switchport port-security violation restrict
+ switchport port-security mac-address sticky 0060.470C.554E
+ spanning-tree portfast
+ spanning-tree bpduguard enable
+
+interface FastEthernet0/14
+ switchport access vlan 40
+ switchport mode access
+ switchport port-security
+ switchport port-security mac-address sticky
+ switchport port-security violation restrict
+ switchport port-security mac-address sticky 000C.CF0B.DC0D
+ spanning-tree portfast
+ spanning-tree bpduguard enable
+
+interface FastEthernet0/15
+ switchport access vlan 40
+ switchport mode access
+ switchport port-security
+ switchport port-security mac-address sticky
+ switchport port-security violation restrict
+ switchport port-security mac-address sticky 0002.174B.64A8
+ spanning-tree portfast
+ spanning-tree bpduguard enable
+
+!
+! UNUSED FAST ETHERNET PORTS
+!
+
+interface FastEthernet0/16
+ description UNUSED-PORT
+ shutdown
+
+interface FastEthernet0/17
+ description UNUSED-PORT
+ shutdown
+
+interface FastEthernet0/18
+ description UNUSED-PORT
+ shutdown
+
+interface FastEthernet0/19
+ description UNUSED-PORT
+ shutdown
+
+interface FastEthernet0/20
+ description UNUSED-PORT
+ shutdown
+
+interface FastEthernet0/21
+ description UNUSED-PORT
+ shutdown
+
+interface FastEthernet0/22
+ description UNUSED-PORT
+ shutdown
+
+interface FastEthernet0/23
+ description UNUSED-PORT
+ shutdown
+
+!
+! TRUNK TO BR-R1
+!
+
+interface FastEthernet0/24
+ switchport trunk native vlan 999
+ switchport trunk allowed vlan 10,20,30,40,99
+ switchport mode trunk
+
+!
+! UNUSED GIGABIT ETHERNET PORTS
+!
+
+interface GigabitEthernet0/1
+ description UNUSED-PORT
+ shutdown
+
+interface GigabitEthernet0/2
+ description UNUSED-PORT
+ shutdown
+
+!
+! MANAGEMENT VLAN
+!
+
+interface Vlan1
+ no ip address
+ shutdown
+
+interface Vlan99
+ ip address 192.168.10.58 255.255.255.248
+
+ip default-gateway 192.168.10.57
+
+!
+! SSH-ONLY REMOTE MANAGEMENT
+!
+
+line con 0
+
+line vty 0 4
+ login local
+ transport input ssh
+
+line vty 5 15
+ login local
+ transport input ssh
+
+end
+
+! ==================================================
+! END OF BR-SW1 CONFIGURATION
+! ==================================================
